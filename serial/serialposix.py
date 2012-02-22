@@ -270,8 +270,7 @@ class PosixSerial(SerialBase):
             raise SerialException("Port must be configured before it can be used.")
         # open
         try:
-#            self.fd = os.open(self.portstr, os.O_RDWR|os.O_NOCTTY|os.O_NONBLOCK)
-            self.fd = os.open('/dev/ttyACM0', os.O_RDWR|os.O_NOCTTY|os.O_NONBLOCK)
+            self.fd = os.open(self.portstr, os.O_RDWR|os.O_NOCTTY|os.O_NONBLOCK)
         except Exception, msg:
             self.fd = None
             raise SerialException("could not open port %s: %s" % (self._port, msg))
@@ -569,7 +568,7 @@ class PosixSerial(SerialBase):
         """internal - not portable!"""
         if self.fd is None:
             raise portNotOpenError
-        fcntl.fcntl(self.fd, FCNTL.F_SETFL, FCNTL.O_NONBLOCK)
+        fcntl.fcntl(self.fd, FCNTL.F_SETFL, os.O_NONBLOCK)
 
     def fileno(self):
         """For easier use of the serial port instance with select.
@@ -617,7 +616,7 @@ class PosixPollSerial(Serial):
             while len(read) < size:
                 # print "\tread(): size",size, "have", len(read)    #debug
                 # wait until device becomes ready to read (or something fails)
-                for fd, event in poll.poll(self._timeout):
+                for fd, event in poll.poll(self._timeout*1000):
                     if event & (select.POLLERR|select.POLLHUP|select.POLLNVAL):
                         raise SerialException('device reports error (poll)')
                     #  we don't care if it is select.POLLIN or timeout, that's

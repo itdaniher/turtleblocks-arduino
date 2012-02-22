@@ -2,10 +2,10 @@
 # Python Serial Port Extension for Win32, Linux, BSD, Jython
 # see __init__.py
 #
-# (C) 2001-2009 Chris Liechti <cliechti@gmx.net>
+# (C) 2001-2010 Chris Liechti <cliechti@gmx.net>
 # this is distributed under a free software license, see license.txt
 
-# compatibility folder Python < 2.6 
+# compatibility for older Python < 2.6
 try:
     bytes
     bytearray
@@ -19,6 +19,7 @@ except (NameError, AttributeError):
     class bytearray(list):
         # for bytes(bytearray()) usage
         def __str__(self): return ''.join(self)
+        def __repr__(self): return 'bytearray(%r)' % ''.join(self)
         # append automatically converts integers to characters
         def append(self, item):
             if isinstance(item, str):
@@ -30,6 +31,20 @@ except (NameError, AttributeError):
             for byte in other:
                 self.append(byte)
             return self
+
+        def __getslice__(self, i, j):
+            return bytearray(list.__getslice__(self, i, j))
+
+        def __getitem__(self, item):
+            if isinstance(item, slice):
+                return bytearray(list.__getitem__(self, item))
+            else:
+                return ord(list.__getitem__(self, item))
+
+        def __eq__(self, other):
+            if isinstance(other, basestring):
+                other = bytearray(other)
+            return list.__eq__(self, other)
 
 # all Python versions prior 3.x convert str([17]) to '[17]' instead of '\x11'
 # so a simple bytes(sequence) doesn't work for all versions
@@ -43,6 +58,9 @@ def to_bytes(seq):
 # create control bytes
 XON  = to_bytes([17])
 XOFF = to_bytes([19])
+
+CR = to_bytes([13])
+LF = to_bytes([10])
 
 
 PARITY_NONE, PARITY_EVEN, PARITY_ODD, PARITY_MARK, PARITY_SPACE = 'N', 'E', 'O', 'M', 'S'
@@ -120,6 +138,47 @@ class FileLike(object):
     def __iter__(self):
         return self
 
+    def readline(self, size=None, eol=LF):
+        """read a line which is terminated with end-of-line (eol) character
+        ('\n' by default) or until timeout."""
+        leneol = len(eol)
+        line = bytearray()
+        while True:
+            c = self.read(1)
+            if c:
+                line += c
+                if line[-leneol:] == eol:
+                    break
+                if size is not None and len(line) >= size:
+                    break
+            else:
+                break
+        return bytes(line)
+
+    def readlines(self, sizehint=None, eol=LF):
+        """read a list of lines, until timeout.
+        sizehint is ignored."""
+        if self.timeout is None:
+            raise ValueError("Serial port MUST have enabled timeout for this function!")
+        lines = []
+        while True:
+            line = self.readline(eol=eol)
+            if line:
+                lines.append(line)
+                if line[-1] != eol:    # was the line received with a timeout?
+                    break
+            else:
+                break
+        return lines
+
+    def xreadlines(self, sizehint=None):
+        """Read lines, implemented as generator. It will raise StopIteration on
+        timeout (empty read). sizehint is ignored."""
+        while True:
+            line = self.readline()
+            if not line: break
+            yield line
+
     # other functions of file-likes - not used by pySerial
 
     #~ readinto(b)
@@ -161,10 +220,10 @@ class SerialBase(object):
                  parity=PARITY_NONE,    # enable parity checking
                  stopbits=STOPBITS_ONE, # number of stop bits
                  timeout=None,          # set a timeout value, None to wait forever
-                 xonxoff=0,             # enable software flow control
-                 rtscts=0,              # enable RTS/CTS flow control
+                 xonxoff=False,         # enable software flow control
+                 rtscts=False,          # enable RTS/CTS flow control
                  writeTimeout=None,     # set a timeout for writes
-                 dsrdtr=None,           # None: use rtscts setting, dsrdtr override if true or false
+                 dsrdtr=False,          # None: use rtscts setting, dsrdtr override if True or False
                  interCharTimeout=None  # Inter-character timeout, None to disable
                  ):
         """Initialize comm port object. If a port is given, then the port will be
@@ -436,43 +495,6 @@ class SerialBase(object):
             self.dsrdtr,
         )
 
-    #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-
-    def readline(self, size=None, eol='\n'):
-        """read a line which is terminated with end-of-line (eol) character
-        ('\n' by default) or until timeout"""
-        line = ''
-        while 1:
-            c = self.read(1)
-            if c:
-                line += c   # not very efficient but lines are usually not that long
-                if c == eol:
-                    break
-                if size is not None and len(line) >= size:
-                    break
-            else:
-                break
-        return bytes(line)
-
-    def readlines(self, sizehint=None, eol='\n'):
-        """read a list of lines, until timeout
-        sizehint is ignored"""
-        if self.timeout is None:
-            raise ValueError("Serial port MUST have enabled timeout for this function!")
-        lines = []
-        while 1:
-            line = self.readline(eol=eol)
-            if line:
-                lines.append(line)
-                if line[-1] != eol:    # was the line received with a timeout?
-                    break
-            else:
-                break
-        return lines
-
-    def xreadlines(self, sizehint=None):
-        """just call readlines - here for compatibility"""
-        return self.readlines()
 
     #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
     # compatibility with io library

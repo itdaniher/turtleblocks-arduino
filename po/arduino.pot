@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-22 03:07-0200\n"
+"POT-Creation-Date: 2012-02-22 15:49-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,19 +42,19 @@ msgid "SERVO"
 msgstr ""
 
 #: arduino.py:34
-msgid "ERROR: Check the Arduino and the number of port"
+msgid "ERROR: Check the Arduino and the number of port."
 msgstr ""
 
 #: arduino.py:35
-msgid "ERROR: Value must be a number between 0 to 255"
+msgid "ERROR: Value must be a number from 0 to 255."
 msgstr ""
 
 #: arduino.py:36
-msgid "ERROR: Value must be HIGH or LOW"
+msgid "ERROR: Value must be either HIGH or LOW."
 msgstr ""
 
 #: arduino.py:37
-msgid "ERROR: The mode must be: INPUT, OUTPUT, PWM or SERVO"
+msgid "ERROR: The mode must be either INPUT, OUTPUT, PWM or SERVO."
 msgstr ""
 
 #: arduino.py:68
@@ -74,7 +74,7 @@ msgid "mode"
 msgstr ""
 
 #: arduino.py:75
-msgid "selects the pin function (INPUT, OUTPUT, PWM, SERVO)"
+msgid "Select the pin function (INPUT, OUTPUT, PWM, SERVO)."
 msgstr ""
 
 #: arduino.py:84
@@ -86,7 +86,7 @@ msgid "value"
 msgstr ""
 
 #: arduino.py:86
-msgid "Writes analog value in specified port."
+msgid "Write analog value in specified port."
 msgstr ""
 
 #: arduino.py:95
@@ -96,7 +96,7 @@ msgstr ""
 #: arduino.py:97
 msgid ""
 "Read value from analog port. Value may be between 0 and 1023. Use Vref to "
-"determine voltage. For USB aprox. volt=((read)*5)/1024)"
+"determine voltage. For USB, volt=((read)*5)/1024) approximately."
 msgstr ""
 
 #: arduino.py:107
@@ -104,7 +104,7 @@ msgid "digital write"
 msgstr ""
 
 #: arduino.py:109
-msgid "Writes digital value in specified port."
+msgid "Write digital value to specified port."
 msgstr ""
 
 #: arduino.py:118
@@ -116,25 +116,25 @@ msgid "Read value from digital port."
 msgstr ""
 
 #: arduino.py:130
-msgid "HIGH value for digital port"
+msgid "Set HIGH value for digital port."
 msgstr ""
 
 #: arduino.py:139
-msgid "configure Arduino port as digital input"
+msgid "Configure Arduino port for digital input."
 msgstr ""
 
 #: arduino.py:148
-msgid "configure Arduino port to drive a Servo"
+msgid "Configure Arduino port to drive a servo."
 msgstr ""
 
 #: arduino.py:157
-msgid "LOW value for digital port"
+msgid "Set LOW value for digital port."
 msgstr ""
 
 #: arduino.py:166
-msgid "configure Arduino port as digital output"
+msgid "Configure Arduino port for digital output."
 msgstr ""
 
 #: arduino.py:175
-msgid "configure Arduino port as pwm (pulse width modulation)"
+msgid "Configure Arduino port for PWM (pulse-width modulation)."
 msgstr ""

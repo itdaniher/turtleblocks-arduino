@@ -1,0 +1,140 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-02-22 03:07-0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: arduino.py:30 arduino.py:129 arduino.py:252 arduino.py:253 arduino.py:260
+msgid "HIGH"
+msgstr ""
+
+#: arduino.py:30 arduino.py:156 arduino.py:254 arduino.py:255 arduino.py:263
+msgid "LOW"
+msgstr ""
+
+#: arduino.py:31 arduino.py:138 arduino.py:266
+msgid "INPUT"
+msgstr ""
+
+#: arduino.py:31 arduino.py:165 arduino.py:269
+msgid "OUTPUT"
+msgstr ""
+
+#: arduino.py:32 arduino.py:174 arduino.py:272
+msgid "PWM"
+msgstr ""
+
+#: arduino.py:32 arduino.py:147 arduino.py:275
+msgid "SERVO"
+msgstr ""
+
+#: arduino.py:34
+msgid "ERROR: Check the Arduino and the number of port"
+msgstr ""
+
+#: arduino.py:35
+msgid "ERROR: Value must be a number between 0 to 255"
+msgstr ""
+
+#: arduino.py:36
+msgid "ERROR: Value must be HIGH or LOW"
+msgstr ""
+
+#: arduino.py:37
+msgid "ERROR: The mode must be: INPUT, OUTPUT, PWM or SERVO"
+msgstr ""
+
+#: arduino.py:68
+msgid "Palette of Arduino blocks"
+msgstr ""
+
+#: arduino.py:74
+msgid "pin mode"
+msgstr ""
+
+#: arduino.py:74 arduino.py:84 arduino.py:107
+msgid "pin"
+msgstr ""
+
+#: arduino.py:74
+msgid "mode"
+msgstr ""
+
+#: arduino.py:75
+msgid "selects the pin function (INPUT, OUTPUT, PWM, SERVO)"
+msgstr ""
+
+#: arduino.py:84
+msgid "analog write"
+msgstr ""
+
+#: arduino.py:84 arduino.py:107
+msgid "value"
+msgstr ""
+
+#: arduino.py:86
+msgid "Writes analog value in specified port."
+msgstr ""
+
+#: arduino.py:95
+msgid "analog read"
+msgstr ""
+
+#: arduino.py:97
+msgid ""
+"Read value from analog port. Value may be between 0 and 1023. Use Vref to "
+"determine voltage.For USB aprox. volt=((read)*5)/1024)"
+msgstr ""
+
+#: arduino.py:107
+msgid "digital write"
+msgstr ""
+
+#: arduino.py:109
+msgid "Writes digital value in specified port."
+msgstr ""
+
+#: arduino.py:118
+msgid "digital read"
+msgstr ""
+
+#: arduino.py:120
+msgid "Read value from digital port."
+msgstr ""
+
+#: arduino.py:130
+msgid "HIGH value for digital port"
+msgstr ""
+
+#: arduino.py:139
+msgid "configure Arduino port as digital input"
+msgstr ""
+
+#: arduino.py:148
+msgid "configure Arduino port to drive a Servo"
+msgstr ""
+
+#: arduino.py:157
+msgid "LOW value for digital port"
+msgstr ""
+
+#: arduino.py:166
+msgid "configure Arduino port as digital output"
+msgstr ""
+
+#: arduino.py:175
+msgid "configure Arduino port as pwm (pulse width modulation)"
+msgstr ""

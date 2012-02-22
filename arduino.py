@@ -31,10 +31,10 @@ VALUE = {_('HIGH'): firmata.HIGH, _('LOW'): firmata.LOW}
 MODE = {_('INPUT'): firmata.INPUT, _('OUTPUT'): firmata.OUTPUT,
         _('PWM'): firmata.PWM, _('SERVO'): firmata.SERVO}
 
-ERROR = _('ERROR: Check the Arduino and the number of port')
-ERROR_VALUE_A = _('ERROR: Value must be a number between 0 to 255')
-ERROR_VALUE_D = _('ERROR: Value must be HIGH or LOW')
-ERROR_MODE = _('ERROR: The mode must be: INPUT, OUTPUT, PWM or SERVO')
+ERROR = _('ERROR: Check the Arduino and the number of port.')
+ERROR_VALUE_A = _('ERROR: Value must be a number from 0 to 255.')
+ERROR_VALUE_D = _('ERROR: Value must be either HIGH or LOW.')
+ERROR_MODE = _('ERROR: The mode must be either INPUT, OUTPUT, PWM or SERVO.')
 
 device = '/dev/ttyUSB0'
 speed = 57600
@@ -72,7 +72,7 @@ class Arduino(Plugin):
         palette.add_block('pinmode',
                   style='basic-style-2arg',
                   label=[_('pin mode'),_('pin'),_('mode')],
-                  help_string=_('selects the pin function (INPUT, OUTPUT, PWM, SERVO)'),
+                  help_string=_('Select the pin function (INPUT, OUTPUT, PWM, SERVO).'),
                   prim_name='pinmode')
         self.tw.lc.def_prim('pinmode', 2,
             lambda self, x, y:
@@ -83,7 +83,7 @@ class Arduino(Plugin):
                   style='basic-style-2arg',
                   label=[_('analog write'),_('pin'),_('value')],
                   default=[0, 255],
-                  help_string=_('Writes analog value in specified port.'),
+                  help_string=_('Write analog value in specified port.'),
                   prim_name='analogwrite')
         self.tw.lc.def_prim('analogwrite', 2,
             lambda self, x, y:
@@ -94,8 +94,8 @@ class Arduino(Plugin):
                   style='basic-style-1arg',
                   label=[_('analog read')],
                   default=[0],
-                  help_string=_('Read value from analog port. Value may be between 0 and 1023. Use Vref to determine voltage. \
-For USB aprox. volt=((read)*5)/1024)'),
+                  help_string=_('Read value from analog port. Value may be between 0 and 1023. Use Vref \
+to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
                   prim_name='analogread')
         self.tw.lc.def_prim('analogread', 1,
             lambda self, x:
@@ -106,7 +106,7 @@ For USB aprox. volt=((read)*5)/1024)'),
                   style='basic-style-2arg',
                   label=[_('digital write'),_('pin'),_('value')],
                   default=[13],
-                  help_string=_('Writes digital value in specified port.'),
+                  help_string=_('Write digital value to specified port.'),
                   prim_name='digitalwrite')
         self.tw.lc.def_prim('digitalwrite', 2,
             lambda self, x, y:
@@ -127,7 +127,7 @@ For USB aprox. volt=((read)*5)/1024)'),
         palette.add_block('high',
                   style='box-style',
                   label=_('HIGH'),
-                  help_string=_('HIGH value for digital port'),
+                  help_string=_('Set HIGH value for digital port.'),
                   prim_name='high')
         self.tw.lc.def_prim('high', 0,
             lambda self: primitive_dictionary['high']())
@@ -136,7 +136,7 @@ For USB aprox. volt=((read)*5)/1024)'),
         palette.add_block('input',
                   style='box-style',
                   label=_('INPUT'),
-                  help_string=_('configure Arduino port as digital input'),
+                  help_string=_('Configure Arduino port for digital input.'),
                   prim_name='input')
         self.tw.lc.def_prim('input', 0,
             lambda self: primitive_dictionary['input']())
@@ -145,7 +145,7 @@ For USB aprox. volt=((read)*5)/1024)'),
         palette.add_block('servo',
                   style='box-style',
                   label=_('SERVO'),
-                  help_string=_('configure Arduino port to drive a Servo'),
+                  help_string=_('Configure Arduino port to drive a servo.'),
                   prim_name='servo')
         self.tw.lc.def_prim('servo', 0,
             lambda self: primitive_dictionary['servo']())
@@ -154,7 +154,7 @@ For USB aprox. volt=((read)*5)/1024)'),
         palette.add_block('low',
                   style='box-style',
                   label=_('LOW'),
-                  help_string=_('LOW value for digital port'),
+                  help_string=_('Set LOW value for digital port.'),
                   prim_name='low')
         self.tw.lc.def_prim('low', 0,
             lambda self: primitive_dictionary['low']())
@@ -163,7 +163,7 @@ For USB aprox. volt=((read)*5)/1024)'),
         palette.add_block('output',
                   style='box-style',
                   label=_('OUTPUT'),
-                  help_string=_('configure Arduino port as digital output'),
+                  help_string=_('Configure Arduino port for digital output.'),
                   prim_name='output')
         self.tw.lc.def_prim('output', 0,
             lambda self: primitive_dictionary['output']())
@@ -172,7 +172,7 @@ For USB aprox. volt=((read)*5)/1024)'),
         palette.add_block('pwm',
                   style='box-style',
                   label=_('PWM'),
-                  help_string=_('configure Arduino port as pwm (pulse width modulation)'),
+                  help_string=_('Configure Arduino port for PWM (pulse-width modulation).'),
                   prim_name='pwm')
         self.tw.lc.def_prim('pwm', 0,
             lambda self: primitive_dictionary['pwm']())

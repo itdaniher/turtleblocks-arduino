@@ -89,17 +89,6 @@ class Arduino(Plugin):
             lambda self, x, y:
             primitive_dictionary['analogwrite'](x, y))
 
-        primitive_dictionary['digitalwrite'] = self._prim_digital_write
-        palette.add_block('basic-style-2arg',
-                  style='number-style-block',
-                  label=[_('digital write'),_('pin'),_('value')],
-                  default=[13],
-                  help_string=_('Writes digital value in specified port.'),
-                  prim_name='digitalwrite')
-        self.tw.lc.def_prim('digitalwrite', 2,
-            lambda self, x, y:
-            primitive_dictionary['digitalwrite'](x, y))
-
         primitive_dictionary['analogread'] = self._prim_analog_read
         palette.add_block('analogread',
                   style='basic-style-1arg',
@@ -112,10 +101,21 @@ class Arduino(Plugin):
             lambda self, x:
             primitive_dictionary['analogread'](x))
 
+        primitive_dictionary['digitalwrite'] = self._prim_digital_write
+        palette.add_block('digitalwrite',
+                  style='basic-style-2arg',
+                  label=[_('digital write'),_('pin'),_('value')],
+                  default=[13],
+                  help_string=_('Writes digital value in specified port.'),
+                  prim_name='digitalwrite')
+        self.tw.lc.def_prim('digitalwrite', 2,
+            lambda self, x, y:
+            primitive_dictionary['digitalwrite'](x, y))
+
         primitive_dictionary['digitalread'] = self._prim_digital_read
         palette.add_block('digitalread',
                   style='basic-style-1arg',
-                  label=[_('analog read')],
+                  label=[_('digital read')],
                   default=[13],
                   help_string=_('Read value from digital port.'),
                   prim_name='digitalread')
@@ -132,15 +132,6 @@ class Arduino(Plugin):
         self.tw.lc.def_prim('high', 0,
             lambda self: primitive_dictionary['high']())
 
-        primitive_dictionary['low'] = self._prim_low
-        palette.add_block('low',
-                  style='box-style',
-                  label=_('LOW'),
-                  help_string=_('LOW value for digital port'),
-                  prim_name='low')
-        self.tw.lc.def_prim('low', 0,
-            lambda self: primitive_dictionary['low']())
-
         primitive_dictionary['input'] = self._prim_input
         palette.add_block('input',
                   style='box-style',
@@ -149,6 +140,24 @@ class Arduino(Plugin):
                   prim_name='input')
         self.tw.lc.def_prim('input', 0,
             lambda self: primitive_dictionary['input']())
+
+        primitive_dictionary['servo'] = self._prim_servo
+        palette.add_block('servo',
+                  style='box-style',
+                  label=_('SERVO'),
+                  help_string=_('configure Arduino port to drive a Servo'),
+                  prim_name='servo')
+        self.tw.lc.def_prim('servo', 0,
+            lambda self: primitive_dictionary['servo']())
+
+        primitive_dictionary['low'] = self._prim_low
+        palette.add_block('low',
+                  style='box-style',
+                  label=_('LOW'),
+                  help_string=_('LOW value for digital port'),
+                  prim_name='low')
+        self.tw.lc.def_prim('low', 0,
+            lambda self: primitive_dictionary['low']())
 
         primitive_dictionary['output'] = self._prim_output
         palette.add_block('output',
@@ -168,14 +177,7 @@ class Arduino(Plugin):
         self.tw.lc.def_prim('pwm', 0,
             lambda self: primitive_dictionary['pwm']())
 
-        primitive_dictionary['servo'] = self._prim_servo
-        palette.add_block('servo',
-                  style='box-style',
-                  label=_('HIGH'),
-                  help_string=_('configure Arduino port to drive a Servo'),
-                  prim_name='servo')
-        self.tw.lc.def_prim('servo', 0,
-            lambda self: primitive_dictionary['servo']())
+
 
 
     def start(self):

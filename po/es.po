@@ -96,7 +96,7 @@ msgstr ""
 #: arduino.py:97
 msgid ""
 "Read value from analog port. Value may be between 0 and 1023. Use Vref to "
-"determine voltage.For USB aprox. volt=((read)*5)/1024)"
+"determine voltage. For USB aprox. volt=((read)*5)/1024)"
 msgstr ""
 
 #: arduino.py:107

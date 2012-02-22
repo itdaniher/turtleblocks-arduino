@@ -94,7 +94,7 @@ class Arduino(Plugin):
                   style='basic-style-1arg',
                   label=[_('analog read')],
                   default=[0],
-                  help_string=_('Read value from analog port. Value may be between 0 and 1023. Use Vref to determine voltage.\
+                  help_string=_('Read value from analog port. Value may be between 0 and 1023. Use Vref to determine voltage. \
 For USB aprox. volt=((read)*5)/1024)'),
                   prim_name='analogread')
         self.tw.lc.def_prim('analogread', 1,

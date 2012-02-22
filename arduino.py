@@ -39,10 +39,10 @@ ERROR_MODE = _('ERROR: The mode must be: INPUT, OUTPUT, PWM or SERVO')
 device = '/dev/ttyUSB0'
 speed = 57600
 
-class Plugin-example(Plugin):
+class Arduino(Plugin):
 
     def __init__(self, parent):
-        self._parent = parent
+        self.tw = parent
 
 
         self._dev = device
@@ -65,8 +65,7 @@ class Plugin-example(Plugin):
             pass
 
 
-        palette = make_palette('arduino', ["#FF00FF","#A000A0"], _('Palette of Arduino blocks'))
-
+        palette = make_palette('arduino', ["#00FFFF","#00A0A0"], _('Palette of Arduino blocks'))
 
 
         primitive_dictionary['pinmode'] = self._prim_pin_mode
@@ -248,9 +247,9 @@ class Plugin-example(Plugin):
         except:
             pass
 
-        if res = VALUE[_('HIGH')]:
+        if res == VALUE[_('HIGH')]:
             res = _('HIGH')
-        elif res = VALUE[_('LOW)]:
+        elif res == VALUE[_('LOW')]:
             res = _('LOW')
 
         return res

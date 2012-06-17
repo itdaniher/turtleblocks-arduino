@@ -22,7 +22,7 @@ from gettext import gettext as _
 from plugins.plugin import Plugin
 
 from TurtleArt.tapalette import make_palette
-from TurtleArt.talogo import media_blocks_dictionary, primitive_dictionary
+from TurtleArt.talogo import media_blocks_dictionary, primitive_dictionary, logoerror
 
 import firmata
 import commands
@@ -36,37 +36,32 @@ ERROR_VALUE_A = _('ERROR: Value must be a number from 0 to 255.')
 ERROR_VALUE_D = _('ERROR: Value must be either HIGH or LOW.')
 ERROR_MODE = _('ERROR: The mode must be either INPUT, OUTPUT, PWM or SERVO.')
 
-device = '/dev/ttyUSB0'
-speed = 57600
 
 class Arduino(Plugin):
 
     def __init__(self, parent):
         self.tw = parent
 
-
-        self._dev = device
-        self._baud = speed
+        self._dev = '/dev/ttyUSB0'
+        self._baud = 57600
         self._arduino = None
 
         status,output = commands.getstatusoutput("ls /dev/ | grep ttyUSB")
-        output=output.split('\n')
+        output = output.split('\n')
         for i in output:
-	        status,aux=commands.getstatusoutput("udevinfo -a -p /class/tty/%s | grep ftdi_sio > /dev/null"%i)
+	        status,aux=commands.getstatusoutput("udevinfo -a -p /class/tty/%s | grep ftdi_sio > /dev/null" % i)
 	        if (not status):
-		        self._dev='/dev/%s'%i
+		        self._dev='/dev/%s' % i
 		        break
 
 
     def setup(self):
         try:
-            self._arduino = firmata.Arduino(port = self._dev, baudrate=self._baud)
+            self._arduino = firmata.Arduino(port = self._dev, baudrate = self._baud)
         except:
             pass
 
-
         palette = make_palette('arduino', ["#00FFFF","#00A0A0"], _('Palette of Arduino blocks'))
-
 
         primitive_dictionary['pinmode'] = self._prim_pin_mode
         palette.add_block('pinmode',
@@ -177,9 +172,6 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
         self.tw.lc.def_prim('pwm', 0,
             lambda self: primitive_dictionary['pwm']())
 
-
-
-
     def start(self):
         pass
 
@@ -203,9 +195,10 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
             try:
                 self._arduino.pin_mode(int(pin), mode)
             except:
-                return ERROR
+                raise logoerror(ERROR)
         else:
-            return ERROR_MODE
+            raise logoerror(ERROR_MODE)
+
             
     def _prim_analog_write(self, pin, value):
         self._check_init()
@@ -214,9 +207,9 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
             try:
                 self._arduino.analog_write(int(pin), value)
             except:
-                return ERROR
+                raise logoerror(ERROR)
         else:
-            return ERROR_VALUE_A
+            raise logoerror(ERROR_VALUE_A)
 
     def _prim_digital_write(self, pin, value):
         self._check_init()
@@ -225,9 +218,9 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
             try:
                 self._arduino.digital_write(int(pin), value)
             except:
-                return ERROR
+                raise logoerror(ERROR)
         else:
-            return ERROR_VALUE_D
+            raise logoerror(ERROR_VALUE_D)
 
     def _prim_analog_read(self, pin):
         self._check_init()

@@ -6,10 +6,8 @@
 # (C) 2001-2010 Chris Liechti <cliechti@gmx.net>
 # this is distributed under a free software license, see license.txt
 
-VERSION = '2.5'
+VERSION = '2.6-pre1'
 
 import sys
-
-from serialposix import *
-
+from serial.serialposix import *
 

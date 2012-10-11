@@ -299,7 +299,7 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
         if (i < n) and (i >= 0):
             self.active_arduino = i
         else:
-            raise logoerror('Not found Arduino %s' & int(i + 1))
+            raise logoerror('Not found Arduino %s' % int(i + 1))
 
     def _prim_arduinocount(self):
         return len(self._arduinos)

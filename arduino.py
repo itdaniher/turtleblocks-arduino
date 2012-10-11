@@ -44,24 +44,44 @@ class Arduino(Plugin):
 
         self._dev = '/dev/ttyUSB0'
         self._baud = 57600
-        self._arduino = None
 
-        status,output = commands.getstatusoutput("ls /dev/ | grep ttyUSB")
-        output = output.split('\n')
-        for i in output:
-	        status,aux=commands.getstatusoutput("udevinfo -a -p /class/tty/%s | grep ftdi_sio > /dev/null" % i)
-	        if (not status):
-		        self._dev='/dev/%s' % i
-		        break
-
+        self.active_arduino = 0
+        self._prim_arduinorefresh()
 
     def setup(self):
-        try:
-            self._arduino = firmata.Arduino(port = self._dev, baudrate = self._baud)
-        except:
-            pass
 
         palette = make_palette('arduino', ["#00FFFF","#00A0A0"], _('Palette of Arduino blocks'))
+
+        primitive_dictionary['arduino_refresh'] = self._prim_arduinorefresh
+        palette.add_block('arduinorefresh',
+                     style='basic-style',
+                     label=_('refresh Arduino'),
+                     prim_name='arduinorefresh',
+                     help_string=_('Search for connected Arduinos.'))
+        self.tw.lc.def_prim('arduinorefresh', 0,
+            lambda self :
+            primitive_dictionary['arduinorefresh']())
+
+        primitive_dictionary['arduinoselect'] = self._prim_arduinoselect
+        palette.add_block('arduinoselect',
+                          style='basic-style-1arg',
+                          default = 1,
+                          label=_('arduino'),
+                          help_string=_('set current arduino board'),
+                          prim_name = 'arduinoselect')
+        self.tw.lc.def_prim('arduinoselect', 1,
+            lambda self, n: 
+            primitive_dictionary['arduinoselect'](n))
+
+        primitive_dictionary['arduinocount'] = self._prim_arduinocount
+        palette.add_block('arduinocount',
+                          style='box-style',
+                          label=_('number of arduinos'),
+                          help_string=_('number of arduino boards'),
+                          prim_name = 'arduinocount')
+        self.tw.lc.def_prim('arduinocount', 0,
+            lambda self:
+            primitive_dictionary['arduinocount']())
 
         primitive_dictionary['pinmode'] = self._prim_pin_mode
         palette.add_block('pinmode',
@@ -185,15 +205,17 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
         pass
 
     def _check_init(self):
-        if self._arduino:
-            self._arduino.parse()
+        if self._arduinos:
+            a = self._arduinos[self.active_arduino]
+            a.parse()
 
     def _prim_pin_mode(self, pin, mode):
         self._check_init()
         if (mode in MODE):
             mode = MODE[mode]
             try:
-                self._arduino.pin_mode(int(pin), mode)
+                a = self._arduinos[self.active_arduino]
+                a.pin_mode(int(pin), mode)
             except:
                 raise logoerror(ERROR)
         else:
@@ -205,7 +227,8 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
         value = int(value)
         if not((value < 0) or (value > 255)):
             try:
-                self._arduino.analog_write(int(pin), value)
+                a = self._arduinos[self.active_arduino]
+                a.analog_write(int(pin), value)
             except:
                 raise logoerror(ERROR)
         else:
@@ -216,7 +239,8 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
         if (value in VALUE):
             value = VALUE[value]
             try:
-                self._arduino.digital_write(int(pin), value)
+                a = self._arduinos[self.active_arduino]
+                a.digital_write(int(pin), value)
             except:
                 raise logoerror(ERROR)
         else:
@@ -224,10 +248,10 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
 
     def _prim_analog_read(self, pin):
         self._check_init()
-        self._arduino.parse()
         res = -1
         try:
-            res = self._arduino.analog_read(int(pin))
+            a = self._arduinos[self.active_arduino]
+            res = a.analog_read(int(pin))
         except:
             pass
         
@@ -235,10 +259,10 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
 
     def _prim_digital_read(self, pin):
         self._check_init()
-        self._arduino.parse()
         res = -1
         try:
-            res = self._arduino.digital_read(int(pin))
+            a = self._arduinos[self.active_arduino]
+            res = a.digital_read(int(pin))
         except:
             pass
 
@@ -266,5 +290,42 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
 
     def _prim_servo(self):
         return _('SERVO')
+
+    def _prim_arduinoselect(self, i):
+        n = len(self._arduinos)
+        # The list index begin in 0
+        i = int(i - 1)
+        if (i < n) and (i >= 0):
+            self.active_arduino = i
+        else:
+            raise logoerror('Not found Arduino %s' & int(i + 1))
+
+    def _prim_arduinocount(self):
+        return len(self._arduinos)
+
+    def _prim_arduinorefresh(self):
+
+        #Close actual Arduinos
+        for dev in self._arduinos:
+            try:
+                dev.close()
+            except:
+                pass
+        self._arduinos = []
+        
+        #Search for new Arduinos
+        status,output_usb = commands.getstatusoutput("ls /dev/ | grep ttyUSB")
+        output_usb_parsed = output_usb.split('\n')
+        status,output_acm = commands.getstatusoutput("ls /dev/ | grep ttyACM")
+        output_acm_parsed = output_acm.split('\n')    
+        output = output_usb_parsed
+        output.extend(output_acm_parsed)
+
+        for dev in output:
+            try:
+                board = firmata.Arduino(port = dev, baudrate = self._baud)
+                self._arduinos.append(board)
+            except:
+                pass
 
 

@@ -115,10 +115,10 @@ class Arduino:
         
     def parse(self):
         """Preparing the data to be handled"""
-	while(self.serial.inWaiting()>0):
-	    data = self.serial.read()
-	    if data != "":
-		self.__process(ord(data))
+        while(self.serial.inWaiting()>0):
+            data = self.serial.read()
+            if data != "":
+                self.__process(ord(data))
 
     def __process(self, input_data):
         """Handling input data"""

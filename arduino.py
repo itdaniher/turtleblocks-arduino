@@ -46,13 +46,14 @@ class Arduino(Plugin):
         self._baud = 57600
 
         self.active_arduino = 0
+        self._arduinos = []
         self._prim_arduinorefresh()
 
     def setup(self):
 
         palette = make_palette('arduino', ["#00FFFF","#00A0A0"], _('Palette of Arduino blocks'))
 
-        primitive_dictionary['arduino_refresh'] = self._prim_arduinorefresh
+        primitive_dictionary['arduinorefresh'] = self._prim_arduinorefresh
         palette.add_block('arduinorefresh',
                      style='basic-style',
                      label=_('refresh Arduino'),
@@ -312,7 +313,7 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
             except:
                 pass
         self._arduinos = []
-        
+
         #Search for new Arduinos
         status,output_usb = commands.getstatusoutput("ls /dev/ | grep ttyUSB")
         output_usb_parsed = output_usb.split('\n')
@@ -327,5 +328,4 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
                 self._arduinos.append(board)
             except:
                 pass
-
 

@@ -45,11 +45,11 @@ class Arduino(Plugin):
     def __init__(self, parent):
         self.tw = parent
 
-        self._dev = '/dev/ttyUSB0'
         self._baud = 57600
 
         self.active_arduino = 0
         self._arduinos = []
+        self._arduinos_dev = []
         self._prim_arduinorefresh()
 
     def setup(self):
@@ -86,6 +86,17 @@ class Arduino(Plugin):
         self.tw.lc.def_prim('arduinocount', 0,
             lambda self:
             primitive_dictionary['arduinocount']())
+
+        primitive_dictionary['arduinoname'] = self._prim_arduinoname
+        palette.add_block('arduinoname',
+                  style='number-style-1arg',
+                  label=_('arduino name'),
+                  default=[1],
+                  help_string=_('Get the name of an arduino.'),
+                  prim_name='arduinoname')
+        self.tw.lc.def_prim('arduinoname', 1,
+            lambda self, x:
+            primitive_dictionary['arduinoname'](x))
 
         primitive_dictionary['pinmode'] = self._prim_pin_mode
         palette.add_block('pinmode',
@@ -307,6 +318,15 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
     def _prim_arduinocount(self):
         return len(self._arduinos)
 
+    def _prim_arduinoname(self, i):
+        n = len(self._arduinos)
+        # The list index begin in 0
+        i = int(i - 1)
+        if (i < n) and (i >= 0):
+            return self._arduinos_dev[i]
+        else:
+            raise logoerror('Not found Arduino %s' % int(i + 1))
+
     def _prim_arduinorefresh(self):
 
         #Close actual Arduinos
@@ -326,9 +346,12 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
         output.extend(output_acm_parsed)
 
         for dev in output:
-            try:
-                board = firmata.Arduino(port = dev, baudrate = self._baud)
-                self._arduinos.append(board)
-            except:
-                pass
+            if not(dev == ''):
+                n = '/dev/%s' % dev
+                try:
+                    board = firmata.Arduino(port = n, baudrate = self._baud)
+                    self._arduinos.append(board)
+                    self._arduinos_dev.append(n)
+                except:
+                    pass
 

@@ -16,16 +16,19 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-from time import time
+import sys
+import commands
 
 from gettext import gettext as _
 from plugins.plugin import Plugin
 
 from TurtleArt.tapalette import make_palette
-from TurtleArt.talogo import media_blocks_dictionary, primitive_dictionary, logoerror
+from TurtleArt.talogo import primitive_dictionary, logoerror
 
+sys.path.insert(0, os.path.abspath('./plugins/arduino'))
+import serial
 import firmata
-import commands
+
 
 VALUE = {_('HIGH'): firmata.HIGH, _('LOW'): firmata.LOW}
 MODE = {_('INPUT'): firmata.INPUT, _('OUTPUT'): firmata.OUTPUT,

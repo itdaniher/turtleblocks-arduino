@@ -70,8 +70,8 @@ class Arduino(Plugin):
         palette.add_block('arduinoselect',
                           style='basic-style-1arg',
                           default = 1,
-                          label=_('arduino'),
-                          help_string=_('set current arduino board'),
+                          label=_('Arduino'),
+                          help_string=_('set current Arduino board'),
                           prim_name = 'arduinoselect')
         self.tw.lc.def_prim('arduinoselect', 1,
             lambda self, n: 
@@ -80,8 +80,8 @@ class Arduino(Plugin):
         primitive_dictionary['arduinocount'] = self._prim_arduinocount
         palette.add_block('arduinocount',
                           style='box-style',
-                          label=_('number of arduinos'),
-                          help_string=_('number of arduino boards'),
+                          label=_('number of Arduinos'),
+                          help_string=_('number of Arduino boards'),
                           prim_name = 'arduinocount')
         self.tw.lc.def_prim('arduinocount', 0,
             lambda self:
@@ -90,9 +90,9 @@ class Arduino(Plugin):
         primitive_dictionary['arduinoname'] = self._prim_arduinoname
         palette.add_block('arduinoname',
                   style='number-style-1arg',
-                  label=_('arduino name'),
+                  label=_('Arduino name'),
                   default=[1],
-                  help_string=_('Get the name of an arduino.'),
+                  help_string=_('Get the name of an Arduino.'),
                   prim_name='arduinoname')
         self.tw.lc.def_prim('arduinoname', 1,
             lambda self, x:

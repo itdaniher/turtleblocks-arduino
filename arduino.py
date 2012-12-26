@@ -23,6 +23,9 @@ from gettext import gettext as _
 from plugins.plugin import Plugin
 
 from TurtleArt.tapalette import make_palette
+from TurtleArt.tapalette import palette_name_to_index
+from TurtleArt.tapalette import palette_blocks
+from TurtleArt.tapalette import special_block_colors
 from TurtleArt.talogo import primitive_dictionary, logoerror
 
 sys.path.insert(0, os.path.abspath('./plugins/arduino'))
@@ -39,6 +42,9 @@ ERROR_VALUE_A = _('ERROR: Value must be a number from 0 to 255.')
 ERROR_VALUE_D = _('ERROR: Value must be either HIGH or LOW.')
 ERROR_MODE = _('ERROR: The mode must be either INPUT, OUTPUT, PWM or SERVO.')
 
+COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
+COLOR_PRESENT = ["#00FFFF","#00A0A0"]
+
 
 class Arduino(Plugin):
 
@@ -50,11 +56,10 @@ class Arduino(Plugin):
         self.active_arduino = 0
         self._arduinos = []
         self._arduinos_dev = []
-        self._prim_arduinorefresh()
 
     def setup(self):
 
-        palette = make_palette('arduino', ["#00FFFF","#00A0A0"], _('Palette of Arduino blocks'))
+        palette = make_palette('arduino', COLOR_NOTPRESENT, _('Palette of Arduino blocks'))
 
         primitive_dictionary['arduinorefresh'] = self._prim_arduinorefresh
         palette.add_block('arduinorefresh',
@@ -65,6 +70,7 @@ class Arduino(Plugin):
         self.tw.lc.def_prim('arduinorefresh', 0,
             lambda self :
             primitive_dictionary['arduinorefresh']())
+        special_block_colors['arduinorefresh'] = COLOR_PRESENT[:]
 
         primitive_dictionary['arduinoselect'] = self._prim_arduinoselect
         palette.add_block('arduinoselect',
@@ -235,8 +241,7 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
                 raise logoerror(ERROR)
         else:
             raise logoerror(ERROR_MODE)
-
-            
+   
     def _prim_analog_write(self, pin, value):
         self._check_init()
         value = int(value)
@@ -327,6 +332,25 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
         else:
             raise logoerror('Not found Arduino %s' % int(i + 1))
 
+    def change_color_blocks(self):
+        index = palette_name_to_index('arduino')
+        arduino_blocks = palette_blocks[index]
+        if len(self._arduinos) > 0:
+            arduino_present = True
+        else:
+            arduino_present = False
+
+        for block in self.tw.block_list.list:
+            if block.type in ['proto', 'block']:
+                if block.name in arduino_blocks:
+                    if (arduino_present) or (block.name == 'arduinorefresh'):
+                        special_block_colors[block.name] = COLOR_PRESENT[:]
+                    else:
+                        special_block_colors[block.name] = COLOR_NOTPRESENT[:]
+                    block.refresh()
+
+        self.tw.show_toolbar_palette(index, regenerate=True, show=False)
+
     def _prim_arduinorefresh(self):
 
         #Close actual Arduinos
@@ -354,4 +378,6 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
                     self._arduinos_dev.append(n)
                 except:
                     pass
+
+        self.change_color_blocks()
 

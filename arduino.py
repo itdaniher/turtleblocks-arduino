@@ -39,8 +39,10 @@ MODE = {_('INPUT'): firmata.INPUT, _('OUTPUT'): firmata.OUTPUT,
 
 ERROR = _('ERROR: Check the Arduino and the number of port.')
 ERROR_VALUE_A = _('ERROR: Value must be a number from 0 to 255.')
-ERROR_VALUE_D = _('ERROR: Value must be either HIGH or LOW.')
+ERROR_VALUE_D = _('ERROR: Value must be either HIGH or LOW, 0 or 1')
 ERROR_MODE = _('ERROR: The mode must be either INPUT, OUTPUT, PWM or SERVO.')
+ERROR_VALUE_TYPE = _('ERROR: The value must be an integer.')
+ERROR_PIN_TYPE = _('ERROR: The pin must be an integer.')
 
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#00FFFF","#00A0A0"]
@@ -226,17 +228,24 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
         pass
 
     def _check_init(self):
-        if self._arduinos:
+        n = len(self._arduinos)
+        if (self.active_arduino < n) and (self.active_arduino >= 0):
             a = self._arduinos[self.active_arduino]
             a.parse()
+        else:
+            raise logoerror(_('Not found Arduino %s') % (self.active_arduino + 1))
 
     def _prim_pin_mode(self, pin, mode):
         self._check_init()
+        try:
+            pin = int(pin)
+        except:
+            logoerror(_('The pin must be an integer'))
         if (mode in MODE):
             mode = MODE[mode]
             try:
                 a = self._arduinos[self.active_arduino]
-                a.pin_mode(int(pin), mode)
+                a.pin_mode(pin, mode)
             except:
                 raise logoerror(ERROR)
         else:
@@ -244,11 +253,18 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
    
     def _prim_analog_write(self, pin, value):
         self._check_init()
-        value = int(value)
+        try:
+            pin = int(pin)
+        except:
+            logoerror(ERROR_PIN_TYPE)
+        try:
+            value = int(value)
+        except:
+            logoerror(ERROR_VALUE_TYPE)
         if not((value < 0) or (value > 255)):
             try:
                 a = self._arduinos[self.active_arduino]
-                a.analog_write(int(pin), value)
+                a.analog_write(pin, value)
             except:
                 raise logoerror(ERROR)
         else:
@@ -256,8 +272,15 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
 
     def _prim_digital_write(self, pin, value):
         self._check_init()
-        if (value in VALUE):
-            value = VALUE[value]
+        try:
+            pin = int(pin)
+        except:
+            logoerror(ERROR_PIN_TYPE)
+        try:
+            value = int(value)
+        except:
+            logoerror(ERROR_VALUE_TYPE)
+        if (value < 0) or (value > 1):
             try:
                 a = self._arduinos[self.active_arduino]
                 a.digital_write(int(pin), value)
@@ -268,10 +291,14 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
 
     def _prim_analog_read(self, pin):
         self._check_init()
+        try:
+            pin = int(pin)
+        except:
+            logoerror(ERROR_PIN_TYPE)
         res = -1
         try:
             a = self._arduinos[self.active_arduino]
-            res = a.analog_read(int(pin))
+            res = a.analog_read(pin)
         except:
             pass
         
@@ -279,25 +306,24 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
 
     def _prim_digital_read(self, pin):
         self._check_init()
+        try:
+            pin = int(pin)
+        except:
+            logoerror(ERROR_PIN_TYPE)
         res = -1
         try:
             a = self._arduinos[self.active_arduino]
-            res = a.digital_read(int(pin))
+            res = a.digital_read(pin)
         except:
             pass
-
-        if res == VALUE[_('HIGH')]:
-            res = _('HIGH')
-        elif res == VALUE[_('LOW')]:
-            res = _('LOW')
 
         return res
             
     def _prim_high(self):
-        return _('HIGH')
+        return 1
 
     def _prim_low(self):
-        return _('LOW')
+        return 0
 
     def _prim_input(self):
         return _('INPUT')
@@ -313,24 +339,30 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
 
     def _prim_arduinoselect(self, i):
         n = len(self._arduinos)
-        # The list index begin in 0
-        i = int(i - 1)
+        try:
+            i = int(i)
+        except:
+            logoerror(_('The device must be an integer'))
+        i = i - 1
         if (i < n) and (i >= 0):
             self.active_arduino = i
         else:
-            raise logoerror('Not found Arduino %s' % int(i + 1))
+            raise logoerror(_('Not found Arduino %s') % (i + 1))
 
     def _prim_arduinocount(self):
         return len(self._arduinos)
 
     def _prim_arduinoname(self, i):
         n = len(self._arduinos)
-        # The list index begin in 0
-        i = int(i - 1)
+        try:
+            i = int(i)
+        except:
+            logoerror(_('The device must be an integer'))
+        i = i - 1
         if (i < n) and (i >= 0):
             return self._arduinos_dev[i]
         else:
-            raise logoerror('Not found Arduino %s' % int(i + 1))
+            raise logoerror(_('Not found Arduino %s') % (i + 1))
 
     def change_color_blocks(self):
         index = palette_name_to_index('arduino')
@@ -373,7 +405,7 @@ to determine voltage. For USB, volt=((read)*5)/1024) approximately.'),
             if not(dev == ''):
                 n = '/dev/%s' % dev
                 try:
-                    board = firmata.Arduino(port = n, baudrate = self._baud)
+                    board = firmata.Arduino(n, self._baud)
                     self._arduinos.append(board)
                     self._arduinos_dev.append(n)
                 except:
